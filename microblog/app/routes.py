@@ -57,7 +57,7 @@ def retrieve_messages():
             radius = float(request.args.get('radius'))
             near = [item for item in data if calc_distance(lati, long, item['data']['lon'], item['data']['lat']) < radius]
             return jsonify(near)
-    else:
+    elif request.method == 'POST':
         # return jsonify(request.json)
         entry = request.json
         entry["created_at"] = datetime.datetime.now().isoformat()
