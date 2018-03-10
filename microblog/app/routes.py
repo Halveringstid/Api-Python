@@ -3,6 +3,7 @@ from flask import render_template, request, jsonify
 from bigchaindb_driver import BigchainDB
 from math import sin, cos, sqrt, atan2, radians
 from bigchaindb_driver.crypto import generate_keypair
+import datetime
 import requests
 import json
 import os
@@ -57,13 +58,25 @@ def retrieve_messages():
             near = [item for item in data if calc_distance(lati, long, item['data']['lon'], item['data']['lat']) < radius]
             return jsonify(near)
     else:
-        lati = float(request.forms.get('lat'))
-        long = float(request.forms.get('lon'))
-        message = request.forms.get('message')
-        auth = request.forms.get('author')
-        for item in data:
-            if (lati, long) == (item['data']['lat'], item['data']['lon']):
-                if (message, auth) == (item['data']['message'], item['data']['author']):
-                    return jsonify(item)
+        entry = {
+            "lat": float(request.forms.get('lat')),
+            "lon": float(request.forms.get('lon')),
+            "message": request.forms.get('message'),
+            "author": request.forms.get('author'),
+            "created_at": datetime.datetime.now().isoformat(),
+            "type": "message"
+        }
+        keypair = generate_keypair()
+        tx = bdb.transactions.prepare(
+            operation='CREATE',
+            signers=keypair.public_key,
+            asset={'data': data, 'metadata': {"type": "message"}})
+        signed_tx = bdb.transactions.fulfill(tx, private_keys=keypair.private_key)
+        x = bdb.transactions.send(signed_tx)
+        return jsonify(x['asset'])
+        # for item in data:
+        #     if (lati, long) == (item['data']['lat'], item['data']['lon']):
+        #         if (message, auth) == (item['data']['message'], item['data']['author']):
+        #             return jsonify(item)
             # render_template('assets.html', data = data)
 
