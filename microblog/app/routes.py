@@ -58,19 +58,15 @@ def retrieve_messages():
             near = [item for item in data if calc_distance(lati, long, item['data']['lon'], item['data']['lat']) < radius]
             return jsonify(near)
     else:
-        entry = {
-            "lat": float(request.forms.get('lat')),
-            "lon": float(request.forms.get('lon')),
-            "message": request.forms.get('message'),
-            "author": request.forms.get('author'),
-            "created_at": datetime.datetime.now().isoformat(),
-            "type": "message"
-        }
+        # return jsonify(request.json)
+        entry = request.json
+        entry["created_at"] = datetime.datetime.now().isoformat()
+        entry["type"] = "message"
         keypair = generate_keypair()
         tx = bdb.transactions.prepare(
             operation='CREATE',
             signers=keypair.public_key,
-            asset={'data': data, 'metadata': {"type": "message"}})
+            asset={'data': entry, 'metadata': {"type": "message"}})
         signed_tx = bdb.transactions.fulfill(tx, private_keys=keypair.private_key)
         x = bdb.transactions.send(signed_tx)
         return jsonify(x['asset'])
