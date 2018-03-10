@@ -1,12 +1,29 @@
 from app import app
 from flask import render_template, request, jsonify
 from bigchaindb_driver import BigchainDB
+from math import sin, cos, sqrt, atan2, radians
 from bigchaindb_driver.crypto import generate_keypair
 import requests
 import json
 import os
 import re
 import operator
+
+def calc_distance(lat1, lon1, lat2, lon2):
+    # returns in distance in kms
+    R = 6373.0
+    lat1 = radians(lat1)
+    lat2 = radians(lat2)
+    lon1 = radians(lon1)
+    lon2 = radians(lon2)
+    dif_lon = lon2-lon1
+    dif_lat = lat2-lat1
+    a = sin(dif_lat / 2) ** 2 + cos(lat1) * cos(lat2) * sin(dif_lon / 2) ** 2
+    c = 2 * atan2(sqrt(a), sqrt(1 - a))
+    return R * c
+
+
+
 @app.route('/')
 @app.route('/index')
 
@@ -31,6 +48,22 @@ def retrieve_messages():
     data = bdb.assets.get(search="message")
     # chuj = {item for item in data}
     if request.method == 'GET':
-        return jsonify(data)
+        if len(request.args) == 0:
+            return jsonify(data)
+        else:# username = request.args.get('username')
+            long = float(request.args.get('lon'))
+            lati = float(request.args.get('lat'))
+            radius = float(request.args.get('radius'))
+            near = [item for item in data if calc_distance(lati, long, item['data']['lon'], item['data']['lat']) < radius]
+            return jsonify(near)
+    else:
+        lati = float(request.forms.get('lat'))
+        long = float(request.forms.get('lon'))
+        message = request.forms.get('message')
+        auth = request.forms.get('author')
+        for item in data:
+            if (lati, long) == (item['data']['lat'], item['data']['lon']):
+                if (message, auth) == (item['data']['message'], item['data']['author']):
+                    return jsonify(item)
             # render_template('assets.html', data = data)
 
