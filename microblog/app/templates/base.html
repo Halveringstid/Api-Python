@@ -1,0 +1,18 @@
+<html>
+    <head>
+        {% if title %}
+        <title>{{title}} - :3</title>
+        {% else %}
+        <title>Something went wrong</title>
+        {% endif %}
+    </head>
+    <body>
+        <div>
+            <a href="/index">Dom</a>
+            <a href="/login">Kłoda</a>
+	    <a href="/spy"> Szpieguj </a>
+        </div>
+	<br><br>
+        {% block content %} {% endblock %}
+    </body>
+</html>

@@ -1,0 +1,25 @@
+<html>
+<body>
+
+<div>
+
+    {% for item in data%}
+        <div>
+            <h1>
+                {{ item }}
+            </h1>
+        {{ item.id }}
+        {{ item.lat }}
+        {{ item.lon }}
+        {{ item.message }}
+        {{ item.author }}
+        {{ item.created_at }}
+        </div>
+    {% endfor %}
+
+</div>
+
+
+
+</body>
+</html>

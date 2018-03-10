@@ -1,0 +1,15 @@
+{% extends "base.html" %}
+
+{% block content %}
+	<h1>{{ country }} </h1>
+	{% for item in loc %}
+	<div><a href="/spy/{{ item[0] }}">{{ item[0] }} {{item[1]}}</a></div>	
+	{% endfor %}
+
+        {% for item in data %}
+        <div><p><a href="http://chaturbate.com{{ item }}"> {{ item }} </a> {{data[item].sex}} {{data[item].age }} {{ data[item].online }}
+		</p>
+	</div>
+        {% endfor %}
+
+{% endblock %}
