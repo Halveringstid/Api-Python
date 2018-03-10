@@ -1,5 +1,11 @@
 # Api-Python
 
+## Run in docker
+```bash 
+docker build -t hacknarock-api:latest .
+docker run -d -p 5000:5000 hacknarock-api:latest
+```
+
 ## API definition
 @GET
 /api/messages
